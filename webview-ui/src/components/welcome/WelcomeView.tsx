@@ -45,13 +45,38 @@ const WelcomeView = () => {
 					overflow: "auto",
 				}}>
 				<h2>Hi, I'm Cline</h2>
-				<div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
-					<ClineLogo />
+				<div style={{ padding: "0 20px", flexShrink: 0 }}>
+					<h2>What can I do for you?</h2>
+					<p>
+						Thanks to Claude's system prompt compression, locally loaded, and even reasoning models like{" "}
+						<VSCodeLink
+							href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF"
+							style={{ display: "inline" }}>
+							FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF
+						</VSCodeLink>
+						can now fuel Cline too. Web scraping mode is only available for Claude. The tested quant level was Q4_K_M,
+						and you can find more details on the original model creators' GGUF quants page:{" "}
+						<VSCodeLink
+							href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF"
+							style={{ display: "inline" }}>
+							GGUF Quant Page
+						</VSCodeLink>
+						. Additionally,{" "}
+						<VSCodeLink
+							href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-Qwen2.5-Coder-32B-Preview-GGUF"
+							style={{ display: "inline" }}>
+							FuseO1-DeepSeekR1-Qwen2.5-Coder-32B-Preview
+						</VSCodeLink>
+						scored a bit lower on the bench results and may not follow instructions as closely; That said, both models
+						can be complementary.
+					</p>
 				</div>
-				<p>
-					I can do all kinds of tasks thanks to breakthroughs in{" "}
-					<VSCodeLink href="https://www.anthropic.com/claude/sonnet" style={{ display: "inline" }}>
-						Claude 3.7 Sonnet's
+
+				<p style={{ marginTop: "10px" }}>
+					Local models like <strong>FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF</strong> (tested with Q4_K_M
+					quantization) can be run directly on your machine. This model is available from{" "}
+					<VSCodeLink href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF">
+						Hugging Face
 					</VSCodeLink>
 					agentic coding capabilities and access to tools that let me create & edit files, explore complex projects, use
 					a browser, and execute terminal commands <i>(with your permission, of course)</i>. I can even use MCP to
