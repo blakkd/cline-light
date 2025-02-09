@@ -793,27 +793,33 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<div style={{ padding: "0 20px", flexShrink: 0 }}>
 						<h2>What can I do for you?</h2>
 						<p>
-							Thanks to Claude's system prompt compression, locally loaded, and even reasonning models like{" "}
+							This Cline fork only focuses on prompt compression, to make it usable on memory restricted
+							environments. Locally loaded models like
 							<VSCodeLink
-								href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF"
+								href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
 								style={{ display: "inline" }}>
-								FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF
+								Qwen2.5-Coder-32B-Instruct
 							</VSCodeLink>
-							can now fuel Cline too. Web scraping mode is only available for Claude. The tested quant level was
-							Q4_K_M, and you can find more details on the original model creators' GGUF quants page:{" "}
+							and
 							<VSCodeLink
-								href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF"
+								href="https://huggingface.co/bartowski/Mistral-Small-24B-Instruct-2501-GGUF"
 								style={{ display: "inline" }}>
-								GGUF Quant Page
+								Mistral-Small-24B-Instruct
 							</VSCodeLink>
-							. Additionally,{" "}
+							and even reasoning models like
 							<VSCodeLink
-								href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-Qwen2.5-Coder-32B-Preview-GGUF"
+								href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
 								style={{ display: "inline" }}>
-								FuseO1-DeepSeekR1-Qwen2.5-Coder-32B-Preview
+								FuseO1's models*
 							</VSCodeLink>
-							scored a bit lower on the bench results and may not follow instructions as closely; That said, both
-							models can be complementary.
+							can now power Cline too! But note web scraping mode is only available for Claude.
+						</p>
+						<p style={{ fontSize: "0.8em", margin: "5px 0 0" }}>
+							{`* Recommended system prompt:
+<br />
+						<code>When replying, always format your reply with &lt;think&gt;{{Reasoning}}&lt;/think&gt;{Response}.</code>
+						<br />
+Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`}
 						</p>
 					</div>
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}

@@ -6,5 +6,3 @@ tmp
 *.vsix
 
 .DS_Store
-
-pnpm-lock.yaml
