@@ -19,5 +19,5 @@ PS: Note that web scraping is only available for Claude.
 
 \* Recommended system prompt:
 
-> When replying, always format your reply with <think>{Reasoning}</think>{Response}.
-Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.
+`When replying, always format your reply with <think>{Reasoning}</think>{Response}.
+Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`
