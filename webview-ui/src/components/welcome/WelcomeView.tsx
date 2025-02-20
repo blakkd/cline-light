@@ -82,11 +82,7 @@ const WelcomeView = () => {
 						can now power Cline too! But note web scraping mode is only available for Claude.
 					</p>
 					<p style={{ fontSize: "0.8em", margin: "5px 0 0" }}>
-						{`* Recommended system prompt:
-<br />
-						<code>When replying, always format your reply with &lt;think&gt;{{Reasoning}}&lt;/think&gt;{Response}.</code>
-						<br />
-Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`}
+						{`* Recommended system prompt: Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`}
 					</p>
 				</div>
 				<div

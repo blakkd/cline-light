@@ -796,39 +796,60 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<div style={{ padding: "0 20px", flexShrink: 0 }}>
 						<h2>What can I do for you?</h2>
 						<p>
-							This Cline fork only focuses on prompt compression, to make it usable on memory restricted
-							environments. Locally loaded models like
-							<VSCodeLink
-								href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
-								style={{ display: "inline" }}>
-								Qwen2.5-Coder-32B-Instruct
-							</VSCodeLink>
-							and
-							<VSCodeLink
-								href="https://huggingface.co/bartowski/Mistral-Small-24B-Instruct-2501-GGUF"
-								style={{ display: "inline" }}>
-								Mistral-Small-24B-Instruct
-							</VSCodeLink>
-							and even reasoning models like
-							<VSCodeLink
-								href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
-								style={{ display: "inline" }}>
-								FuseO1's models*
-							</VSCodeLink>
-							can now power Cline too! But note web scraping mode is only available for Claude.
+							This fork makes Cline accessible to local inference. The prompt has been shortened as much as possible
+							while preserving the original information.
 						</p>
-						<p style={{ fontSize: "0.8em", margin: "5px 0 0" }}>
-							{`* Recommended system prompt:
-<br />
-						<code>When replying, always format your reply with &lt;think&gt;{{Reasoning}}&lt;/think&gt;{Response}.</code>
-						<br />
-Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`}
+						<p>Locally loaded models such as:</p>
+						<ul>
+							<li>
+								<strong>
+									<a href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct" target="_blank">
+										Qwen2.5-Coder-32B-Instruct
+									</a>
+								</strong>
+							</li>
+							<li>
+								<strong>
+									<a href="https://huggingface.co/bartowski/Mistral-Small-24B-Instruct" target="_blank">
+										Mistral-Small-24B-Instruct
+									</a>
+								</strong>
+							</li>
+						</ul>
+						<p>Additionally, reasoning models like:</p>
+						<ul>
+							<li>
+								<strong>
+									<a
+										href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
+										target="_blank">
+										FuseO1's models
+									</a>
+									*
+								</strong>
+							</li>
+							<li>
+								<strong>
+									<a
+										href="https://huggingface.co/yentinglin/Mistral-Small-24B-Instruct-2501-reasoning/"
+										target="_blank">
+										Mistral-Small-24B-Instruct-2501-reasoning
+									</a>
+								</strong>
+							</li>
+						</ul>
+						<p>can now power Cline too!</p>
+						<p></p>
+						<p style={{ fontSize: "0.8em" }}>
+							* Recommended system prompt: "Match your effort to the task. And when it gets tough, take as long as
+							you need to think before you start answering."
 						</p>
+						<p></p>
+						<p style={{ fontSize: "0.8em" }}>Note: the browser tool is only available for Claude.</p>
 					</div>
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
 			)}
-
 			{/* 
 			// Flex layout explanation:
 			// 1. Content div above uses flex: "1 1 0" to:
