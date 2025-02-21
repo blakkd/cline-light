@@ -800,53 +800,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							This fork makes Cline accessible to local inference. The prompt has been shortened as much as possible
 							while preserving the original information.
 						</p>
-						<p>Locally loaded models such as:</p>
-						<ul>
-							<li>
-								<strong>
-									<a href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct" target="_blank">
-										Qwen2.5-Coder-32B-Instruct
-									</a>
-								</strong>
-							</li>
-							<li>
-								<strong>
-									<a href="https://huggingface.co/bartowski/Mistral-Small-24B-Instruct" target="_blank">
-										Mistral-Small-24B-Instruct
-									</a>
-								</strong>
-							</li>
-						</ul>
-						<p>Additionally, reasoning models like:</p>
-						<ul>
-							<li>
-								<strong>
-									<a
-										href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
-										target="_blank">
-										FuseO1's models
-									</a>
-									*
-								</strong>
-							</li>
-							<li>
-								<strong>
-									<a
-										href="https://huggingface.co/yentinglin/Mistral-Small-24B-Instruct-2501-reasoning/"
-										target="_blank">
-										Mistral-Small-24B-Instruct-2501-reasoning
-									</a>
-								</strong>
-							</li>
-						</ul>
-						<p>can now power Cline too!</p>
-						<p></p>
-						<p style={{ fontSize: "0.8em" }}>
-							* Recommended system prompt: "Match your effort to the task. And when it gets tough, take as long as
-							you need to think before you start answering."
-						</p>
-						<p></p>
-						<p style={{ fontSize: "0.8em" }}>Note: the browser tool is only available for Claude.</p>
+						<p style={{ fontSize: "0.8em" }}>Note: the web browsing tool is only available for Claude.</p>
 					</div>
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
