@@ -48,7 +48,7 @@ const WelcomeView = () => {
 				<div style={{ padding: "0 20px", flexShrink: 0 }}>
 					<h2>What can I do for you?</h2>
 					<p>
-						This Cline fork only focuses on prompt compression, to make it usable on memory restricted environments.
+						This Cline fork only focuses on prompt compression, to make it usable in memory restricted environments.
 						Locally loaded models like
 						<VSCodeLink
 							href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
@@ -65,12 +65,9 @@ const WelcomeView = () => {
 						<VSCodeLink
 							href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
 							style={{ display: "inline" }}>
-							FuseO1's models*
+							FuseO1's models
 						</VSCodeLink>
-						can now power Cline too! But note web scraping mode is only available for Claude.
-					</p>
-					<p style={{ fontSize: "0.8em", margin: "5px 0 0" }}>
-						{`* Recommended system prompt: Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`}
+						can now power Cline too! But note that the web scraping tool is only available for Claude.
 					</p>
 				</div>
 
