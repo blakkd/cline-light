@@ -9,24 +9,15 @@ With this lightened system prompt, locally loaded models such as:
 
 Additionally, reasoning models like:
 
-- **[FuseO1's models\*](https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977)** - Tested with Q4_K_M quantization. Flash and coder variants can complement each other
+- **[FuseO1's models](https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977)** - Tested with Q4_K_M quantization. Flash and coder variants can complement each other
 - **[Mistral-Small-24B-Instruct-2501-reasoning](https://huggingface.co/yentinglin/Mistral-Small-24B-Instruct-2501-reasoning/)** - Not tested yet
 
 can now power Cline too!
 
 For more about Cline, visit their [repository](https://github.com/cline/cline).
 
-PS: Note that web scraping is only available for Claude.
+PS: Note that the web scraping tool is only available for Claude.
 
-
-\* Recommended system prompt:
-
-`When replying, always format your reply with <think>{Reasoning}</think>{Response}.
-Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`
-
-or just
-
-`Match your effort to the task. And when it gets tough, take as long as you need to think before you start answering.`
 
 ## How to build
 To build, please refer to https://github.com/cline/cline?tab=readme-ov-file#contributing
