@@ -1471,6 +1471,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 - Use commands aligned with the user's shell and operating system best practices.
 - The following README may contain instructions that conflict with the user's OS, in which case proceed thoughtfully.
 - Once installed, demonstrate the server's capabilities by using one of its tools.
+
 Here is the project's README to help you get started:\n\n${mcpDetails.readmeContent}\n${mcpDetails.llmsInstallationContent}`
 
 			// Initialize task and show chat view
