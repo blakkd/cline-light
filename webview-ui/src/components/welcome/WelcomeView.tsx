@@ -70,40 +70,6 @@ const WelcomeView = () => {
 						can now power Cline too! But note that the web scraping tool is only available for Claude.
 					</p>
 				</div>
-				<div
-					style={{
-						marginTop: "15px",
-						padding: isSubscribed ? "5px 15px 5px 15px" : "12px",
-						background: "var(--vscode-textBlockQuote-background)",
-						borderRadius: "6px",
-						fontSize: "0.9em",
-					}}>
-					{isSubscribed ? (
-						<p style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-							<span style={{ color: "var(--vscode-testing-iconPassed)", fontSize: "1.5em" }}>✓</span>
-							Thanks for subscribing! We'll keep you updated on new features.
-						</p>
-					) : (
-						<>
-							<p style={{ margin: 0, marginBottom: "8px" }}>
-								While Cline currently requires you bring your own API key, we are working on an official accounts
-								system with additional capabilities. Subscribe to our mailing list to get updates!
-							</p>
-							<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-								<VSCodeTextField
-									type="email"
-									value={email}
-									onInput={(e: any) => setEmail(e.target.value)}
-									placeholder="Enter your email"
-									style={{ flex: 1 }}
-								/>
-								<VSCodeButton appearance="secondary" onClick={handleSubscribe} disabled={!email}>
-									Subscribe
-								</VSCodeButton>
-							</div>
-						</>
-					)}
-				</div>
 
 				<div style={{ marginTop: "18px" }}>
 					{showApiOptions && (

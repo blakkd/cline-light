@@ -16,7 +16,7 @@ export const SYSTEM_PROMPT = async (
 - \`requires_approval\`: \`true\` for impactful operations, \`false\` for safe ones.
 - Example:
  <execute_command>
-  <command>npm run dev</command>
+  <command>pnpmrun dev</command>
   <requires_approval>false</requires_approval>
  </execute_command>
 `
@@ -269,7 +269,7 @@ Accomplish the user's task iteratively:
   npx @modelcontextprotocol/create-server weather-server
   cd weather-server
   # Install dependencies
-  npm install axios
+  pnpminstall axios
   \`\`\`
   
   This will create a new project with the following structure:
@@ -560,7 +560,7 @@ Accomplish the user's task iteratively:
   3. Build and compile the executable JavaScript file
   
   \`\`\`bash
-  npm run build
+  pnpmrun build
   \`\`\`
   
   4. Whenever you need an environment variable such as an API key to configure the MCP server, walk the user through the process of getting the key. For example, they may need to create an account and go to a developer dashboard to generate the key. Provide step-by-step instructions and URLs to make it easy for the user to retrieve the necessary information. Then use the ask_followup_question tool to ask the user for the key, in this case the OpenWeather API key.
@@ -583,9 +583,7 @@ Accomplish the user's task iteratively:
     }
   }
   \`\`\`
-  
-  (Note: the user may also ask you to install the MCP server to the Claude desktop app, in which case you would read then modify \`~/Library/Application\ Support/Claude/claude_desktop_config.json\` on macOS for example. It follows the same format of a top level \`mcpServers\` object.)
-  
+    
   6. After you have edited the MCP settings configuration file, the system will automatically run all the servers and expose the available tools and resources in the 'Connected MCP Servers' section. (Note: If you encounter a 'not connected' error when testing a newly installed mcp server, a common cause is an incorrect build path in your MCP settings configuration. Since compiled JavaScript files are commonly output to either 'dist/' or 'build/' directories, double-check that the build path in your MCP settings matches where your files are actually being compiled. E.g. If you assumed 'build' as the folder, check tsconfig.json to see if it's using 'dist' instead.)
   
   7. Now that you have access to these new tools and resources, you may suggest ways the user can command you to invoke them - for example, with this new weather tool now available, you can invite the user to ask "what's the weather in San Francisco?"
