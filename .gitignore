@@ -10,3 +10,5 @@ tmp
 pnpm-lock.yaml
 
 .clineignore
+src/core/prompts/llms-full.txt
+src/core/prompts/mcp.md
