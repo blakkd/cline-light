@@ -62,26 +62,12 @@ const WelcomeView = () => {
 							Mistral-Small-24B-Instruct
 						</VSCodeLink>
 						and even reasoning models like
-						<VSCodeLink
-							href="https://huggingface.co/collections/FuseAI/fuseo1-preview-678eb56093649b2688bc9977"
-							style={{ display: "inline" }}>
-							FuseO1's models
+						<VSCodeLink href="https://huggingface.co/Qwen/QwQ-32B" style={{ display: "inline" }}>
+							QwQ
 						</VSCodeLink>
 						can now power Cline too! But note that the web scraping tool is only available for Claude.
 					</p>
 				</div>
-
-				<p style={{ marginTop: "10px" }}>
-					Local models like <strong>FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF</strong> (tested with Q4_K_M
-					quantization) can be run directly on your machine. This model is available from{" "}
-					<VSCodeLink href="https://huggingface.co/FuseAI/FuseO1-DeepSeekR1-QwQ-SkyT1-32B-Preview-GGUF">
-						Hugging Face
-					</VSCodeLink>
-					agentic coding capabilities and access to tools that let me create & edit files, explore complex projects, use
-					a browser, and execute terminal commands <i>(with your permission, of course)</i>. I can even use MCP to
-					create new tools and extend my own capabilities.
-				</p>
-
 				<p style={{ color: "var(--vscode-descriptionForeground)" }}>
 					Sign up for an account to get started for free, or use an API key that provides access to models like Claude
 					3.7 Sonnet.
