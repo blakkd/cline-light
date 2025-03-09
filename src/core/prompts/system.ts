@@ -22,7 +22,7 @@ export const SYSTEM_PROMPT = async (
 - \`requires_approval\`: \`true\` for impactful operations, \`false\` for safe ones.
 - Example:
  <execute_command>
-  <command>pnpmrun dev</command>
+  <command>pnpm run dev</command>
   <requires_approval>false</requires_approval>
  </execute_command>
 `
@@ -219,358 +219,342 @@ ${resourceList ? `Resources:\n${resourceList}` : ""}`
 
 	const mcpServerCreationDetails = isFullMode
 		? `
-  ## Creating an MCP Server
-  
-  The user may ask you something along the lines of "add a tool" that does some function, in other words to create an MCP server that provides tools and resources that may connect to external APIs for example. You have the ability to create an MCP server and add it to a configuration file that will then expose the tools and resources for you to use with \`use_mcp_tool\` and \`access_mcp_resource\`.
-  
-  When creating MCP servers, it's important to understand that they operate in a non-interactive environment. The server cannot initiate OAuth flows, open browser windows, or prompt for user input during runtime. All credentials and authentication tokens must be provided upfront through environment variables in the MCP settings configuration. For example, Spotify's API uses OAuth to get a refresh token for the user, but the MCP server cannot initiate this flow. While you can walk the user through obtaining an application client ID and secret, you may have to create a separate one-time setup script (like get-refresh-token.js) that captures and logs the final piece of the puzzle: the user's refresh token (i.e. you might run the script using execute_command which would open a browser for authentication, and then log the refresh token so that you can see it in the command output for you to use in the MCP settings configuration).
-  
-  Unless the user specifies otherwise, new MCP servers should be created in: ${await mcpHub.getMcpServersPath()}
-  
-  ### Example MCP Server
-  
-  For example, if the user wanted to give you the ability to retrieve weather information, you could create an MCP server that uses the OpenWeather API to get weather information, add it to the MCP settings configuration file, and then notice that you now have access to new tools and resources in the system prompt that you might use to show the user your new capabilities.
-  
-  The following example demonstrates how to build an MCP server that provides weather data functionality. While this example shows how to implement resources, resource templates, and tools, in practice you should prefer using tools since they are more flexible and can handle dynamic parameters. The resource and resource template implementations are included here mainly for demonstration purposes of the different MCP capabilities, but a real weather server would likely just expose tools for fetching weather data. (The following steps are for macOS)
-  
-  1. Use the \`create-typescript-server\` tool to bootstrap a new project in the default MCP servers directory:
-  
-  \`\`\`bash
-  cd ${await mcpHub.getMcpServersPath()}
-  npx @modelcontextprotocol/create-server weather-server
-  cd weather-server
-  # Install dependencies
-  pnpminstall axios
-  \`\`\`
-  
-  This will create a new project with the following structure:
-  
-  \`\`\`
-  weather-server/
-    ├── package.json
-        {
-          ...
-          "type": "module", // added by default, uses ES module syntax (import/export) rather than CommonJS (require/module.exports) (Important to know if you create additional scripts in this server repository like a get-refresh-token.js script)
-          "scripts": {
-            "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-            ...
-          }
-          ...
-        }
-    ├── tsconfig.json
-    └── src/
-        └── weather-server/
-            └── index.ts      # Main server implementation
-  \`\`\`
-  
-  2. Replace \`src/index.ts\` with the following:
-  
-  \`\`\`typescript
-  #!/usr/bin/env node
-  import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-  import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-  import {
-    CallToolRequestSchema,
-    ErrorCode,
-    ListResourcesRequestSchema,
-    ListResourceTemplatesRequestSchema,
-    ListToolsRequestSchema,
-    McpError,
-    ReadResourceRequestSchema,
-  } from '@modelcontextprotocol/sdk/types.js';
-  import axios from 'axios';
-  
-  const API_KEY = process.env.OPENWEATHER_API_KEY; // provided by MCP config
-  if (!API_KEY) {
-    throw new Error('OPENWEATHER_API_KEY environment variable is required');
-  }
-  
-  interface OpenWeatherResponse {
-    main: {
-      temp: number;
-      humidity: number;
-    };
-    weather: [{ description: string }];
-    wind: { speed: number };
-    dt_txt?: string;
-  }
-  
-  const isValidForecastArgs = (
-    args: any
-  ): args is { city: string; days?: number } =>
-    typeof args === 'object' &&
-    args !== null &&
-    typeof args.city === 'string' &&
-    (args.days === undefined || typeof args.days === 'number');
-  
-  class WeatherServer {
-    private server: Server;
-    private axiosInstance;
-  
-    constructor() {
-      this.server = new Server(
-        {
-          name: 'example-weather-server',
-          version: '0.1.0',
-        },
-        {
-          capabilities: {
-            resources: {},
-            tools: {},
-          },
-        }
-      );
-  
-      this.axiosInstance = axios.create({
-        baseURL: 'http://api.openweathermap.org/data/2.5',
-        params: {
-          appid: API_KEY,
-          units: 'metric',
-        },
-      });
-  
-      this.setupResourceHandlers();
-      this.setupToolHandlers();
-      
-      // Error handling
-      this.server.onerror = (error) => console.error('[MCP Error]', error);
-      process.on('SIGINT', async () => {
-        await this.server.close();
-        process.exit(0);
-      });
+## What is MCP?
+
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you build servers that expose data and functionality to LLM applications in a secure, standardized way. Think of it like a web API, but specifically designed for LLM interactions. MCP servers can:
+
+- Expose data through **Resources** (think of these sort of like GET endpoints; they are used to load information into the LLM's context)
+- Provide functionality through **Tools** (sort of like POST endpoints; they are used to execute code or otherwise produce a side effect)
+- Define interaction patterns through **Prompts** (reusable templates for LLM interactions)
+- And more!
+
+## Where is the config file to add new MCP servers to?
+
+~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json
+
+## Core Concepts
+
+### Server
+
+The FastMCP server is your core interface to the MCP protocol. It handles connection management, protocol compliance, and message routing:
+
+\`\`\`python
+# Add lifespan support for startup/shutdown with strong typing
+from dataclasses import dataclass
+from typing import AsyncIterator
+from mcp.server.fastmcp import FastMCP
+
+# Create a named server
+mcp = FastMCP("My App")
+
+# Specify dependencies for deployment and development
+mcp = FastMCP("My App", dependencies=["pandas", "numpy"])
+
+@dataclass
+class AppContext:
+    db: Database  # Replace with your actual DB type
+
+@asynccontextmanager
+async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
+    """Manage application lifecycle with type-safe context"""
+    try:
+        # Initialize on startup
+        await db.connect()
+        yield AppContext(db=db)
+    finally:
+        # Cleanup on shutdown
+        await db.disconnect()
+
+# Pass lifespan to server
+mcp = FastMCP("My App", lifespan=app_lifespan)
+
+# Access type-safe lifespan context in tools
+@mcp.tool()
+def query_db(ctx: Context) -> str:
+    """Tool that uses initialized resources"""
+    db = ctx.request_context.lifespan_context["db"]
+    return db.query()
+\`\`\`
+
+### Resources
+
+Resources are how you expose data to LLMs. They're similar to GET endpoints in a REST API - they provide data but shouldn't perform significant computation or have side effects:
+
+\`\`\`python
+@mcp.resource("config://app")
+def get_config() -> str:
+    """Static configuration data"""
+    return "App configuration here"
+
+@mcp.resource("users://{user_id}/profile")
+def get_user_profile(user_id: str) -> str:
+   \`Dynamic user data\`
+    return f"Profile data for user {user_id}"
+\`\`\`
+
+### Tools
+
+Tools let LLMs take actions through your server. Unlike resources, tools are expected to perform computation and have side effects:
+
+\`\`\`python
+@mcp.tool()
+def calculate_bmi(weight_kg: float, height_m: float) -> float:
+    """Calculate BMI given weight in kg and height in meters"""
+    return weight_kg / (height_m ** 2)
+
+@mcp.tool()
+async def fetch_weather(city: str) -> str:
+    """Fetch current weather for a city"""
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://api.weather.com/{city}")
+        return response.text
+\`\`\`
+
+### Prompts
+
+Prompts are reusable templates that help LLMs interact with your server effectively:
+
+\`\`\`python
+@mcp.prompt()
+def review_code(code: str) -> str:
+    return f"Please review this code:\n\n{code}"
+
+@mcp.prompt()
+def debug_error(error: str) -> list[Message]:
+    return [
+        UserMessage("I'm seeing this error:"),
+        UserMessage(error),
+        AssistantMessage("I'll help debug that. What have you tried so far?")
+    ]
+\`\`\`
+
+### Images
+
+FastMCP provides an \`Image\` class that automatically handles image data:
+
+\`\`\`python
+from mcp.server.fastmcp import FastMCP, Image
+from PIL import Image as PILImage
+
+@mcp.tool()
+def create_thumbnail(image_path: str) -> Image:
+    """Create a thumbnail from an image"""
+    img = PILImage.open(image_path)
+    img.thumbnail((100, 100))
+    return Image(data=img.tobytes(), format="png")
+\`\`\`
+
+### Context
+
+The Context object gives your tools and resources access to MCP capabilities:
+
+\`\`\`python
+from mcp.server.fastmcp import FastMCP, Context
+
+@mcp.tool()
+async def long_task(files: list[str], ctx: Context) -> str:
+    """Process multiple files with progress tracking"""
+    for i, file in enumerate(files):
+        ctx.info(f"Processing {file}")
+        await ctx.report_progress(i, len(files))
+        data, mime_type = await ctx.read_resource(f"file://{file}")
+    return "Processing complete"
+\`\`\`
+
+## Development Mode
+
+The fastest way to test and debug your server is with the MCP Inspector:
+
+\`\`\`bash
+mcp dev server.py
+
+# Add dependencies
+mcp dev server.py --with pandas --with numpy
+
+# Mount local code
+mcp dev server.py --with-editable .
+\`\`\`
+
+## Examples
+
+### Simple Weather Server
+
+\`\`\`python
+from typing import Any
+import httpx
+from mcp.server.fastmcp import FastMCP
+
+# Initialize FastMCP server
+mcp = FastMCP("weather")
+
+# Constants
+NWS_API_BASE = "https://api.weather.gov"
+USER_AGENT = "weather-app/1.0"
+
+async def make_nws_request(url: str) -> dict[str, Any] | None:
+    """Make a request to the NWS API with proper error handling."""
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "application/geo+json"
     }
-  
-    // MCP Resources represent any kind of UTF-8 encoded data that an MCP server wants to make available to clients, such as database records, API responses, log files, and more. Servers define direct resources with a static URI or dynamic resources with a URI template that follows the format \`[protocol]://[host]/[path]\`.
-    private setupResourceHandlers() {
-      // For static resources, servers can expose a list of resources:
-      this.server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-        resources: [
-          // This is a poor example since you could use the resource template to get the same information but this demonstrates how to define a static resource
-          {
-            uri: \`weather://San Francisco/current\`, // Unique identifier for San Francisco weather resource
-            name: \`Current weather in San Francisco\`, // Human-readable name
-            mimeType: 'application/json', // Optional MIME type
-            // Optional description
-            description:
-              'Real-time weather data for San Francisco including temperature, conditions, humidity, and wind speed',
-          },
-        ],
-      }));
-  
-      // For dynamic resources, servers can expose resource templates:
-      this.server.setRequestHandler(
-        ListResourceTemplatesRequestSchema,
-        async () => ({
-          resourceTemplates: [
-            {
-              uriTemplate: 'weather://{city}/current', // URI template (RFC 6570)
-              name: 'Current weather for a given city', // Human-readable name
-              mimeType: 'application/json', // Optional MIME type
-              description: 'Real-time weather data for a specified city', // Optional description
-            },
-          ],
-        })
-      );
-  
-      // ReadResourceRequestSchema is used for both static resources and dynamic resource templates
-      this.server.setRequestHandler(
-        ReadResourceRequestSchema,
-        async (request) => {
-          const match = request.params.uri.match(
-            /^weather:\/\/([^/]+)\/current$/
-          );
-          if (!match) {
-            throw new McpError(
-              ErrorCode.InvalidRequest,
-              \`Invalid URI format: \${request.params.uri}\`
-            );
-          }
-          const city = decodeURIComponent(match[1]);
-  
-          try {
-            const response = await this.axiosInstance.get(
-              'weather', // current weather
-              {
-                params: { q: city },
-              }
-            );
-  
-            return {
-              contents: [
-                {
-                  uri: request.params.uri,
-                  mimeType: 'application/json',
-                  text: JSON.stringify(
-                    {
-                      temperature: response.data.main.temp,
-                      conditions: response.data.weather[0].description,
-                      humidity: response.data.main.humidity,
-                      wind_speed: response.data.wind.speed,
-                      timestamp: new Date().toISOString(),
-                    },
-                    null,
-                    2
-                  ),
-                },
-              ],
-            };
-          } catch (error) {
-            if (axios.isAxiosError(error)) {
-              throw new McpError(
-                ErrorCode.InternalError,
-                \`Weather API error: \${
-                  error.response?.data.message ?? error.message
-                }\`
-              );
-            }
-            throw error;
-          }
-        }
-      );
-    }
-  
-    /* MCP Tools enable servers to expose executable functionality to the system. Through these tools, you can interact with external systems, perform computations, and take actions in the real world.
-     * - Like resources, tools are identified by unique names and can include descriptions to guide their usage. However, unlike resources, tools represent dynamic operations that can modify state or interact with external systems.
-     * - While resources and tools are similar, you should prefer to create tools over resources when possible as they provide more flexibility.
-     */
-    private setupToolHandlers() {
-      this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-        tools: [
-          {
-            name: 'get_forecast', // Unique identifier
-            description: 'Get weather forecast for a city', // Human-readable description
-            inputSchema: {
-              // JSON Schema for parameters
-              type: 'object',
-              properties: {
-                city: {
-                  type: 'string',
-                  description: 'City name',
-                },
-                days: {
-                  type: 'number',
-                  description: 'Number of days (1-5)',
-                  minimum: 1,
-                  maximum: 5,
-                },
-              },
-              required: ['city'], // Array of required property names
-            },
-          },
-        ],
-      }));
-  
-      this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-        if (request.params.name !== 'get_forecast') {
-          throw new McpError(
-            ErrorCode.MethodNotFound,
-            \`Unknown tool: \${request.params.name}\`
-          );
-        }
-  
-        if (!isValidForecastArgs(request.params.arguments)) {
-          throw new McpError(
-            ErrorCode.InvalidParams,
-            'Invalid forecast arguments'
-          );
-        }
-  
-        const city = request.params.arguments.city;
-        const days = Math.min(request.params.arguments.days || 3, 5);
-  
-        try {
-          const response = await this.axiosInstance.get<{
-            list: OpenWeatherResponse[];
-          }>('forecast', {
-            params: {
-              q: city,
-              cnt: days * 8,
-            },
-          });
-  
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(response.data.list, null, 2),
-              },
-            ],
-          };
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: \`Weather API error: \${
-                    error.response?.data.message ?? error.message
-                  }\`,
-                },
-              ],
-              isError: true,
-            };
-          }
-          throw error;
-        }
-      });
-    }
-  
-    async run() {
-      const transport = new StdioServerTransport();
-      await this.server.connect(transport);
-      console.error('Weather MCP server running on stdio');
-    }
-  }
-  
-  const server = new WeatherServer();
-  server.run().catch(console.error);
-  \`\`\`
-  
-  (Remember: This is just an example - you may use different dependencies, break the implementation up into multiple files, etc.)
-  
-  3. Build and compile the executable JavaScript file
-  
-  \`\`\`bash
-  pnpmrun build
-  \`\`\`
-  
-  4. Whenever you need an environment variable such as an API key to configure the MCP server, walk the user through the process of getting the key. For example, they may need to create an account and go to a developer dashboard to generate the key. Provide step-by-step instructions and URLs to make it easy for the user to retrieve the necessary information. Then use the ask_followup_question tool to ask the user for the key, in this case the OpenWeather API key.
-  
-  5. Install the MCP Server by adding the MCP server configuration to the settings file located at '${await mcpHub.getMcpSettingsFilePath()}'. The settings file may have other MCP servers already configured, so you would read it first and then add your new server to the existing \`mcpServers\` object.
-  
-  IMPORTANT: Regardless of what else you see in the MCP settings file, you must default any new MCP servers you create to disabled=false and autoApprove=[].
-  
-  \`\`\`json
-  {
-    "mcpServers": {
-      ...,
-      "weather": {
-        "command": "node",
-        "args": ["/path/to/weather-server/build/index.js"],
-        "env": {
-          "OPENWEATHER_API_KEY": "user-provided-api-key"
-        }
-      },
-    }
-  }
-  \`\`\`
-    
-  6. After you have edited the MCP settings configuration file, the system will automatically run all the servers and expose the available tools and resources in the 'Connected MCP Servers' section. (Note: If you encounter a 'not connected' error when testing a newly installed mcp server, a common cause is an incorrect build path in your MCP settings configuration. Since compiled JavaScript files are commonly output to either 'dist/' or 'build/' directories, double-check that the build path in your MCP settings matches where your files are actually being compiled. E.g. If you assumed 'build' as the folder, check tsconfig.json to see if it's using 'dist' instead.)
-  
-  7. Now that you have access to these new tools and resources, you may suggest ways the user can command you to invoke them - for example, with this new weather tool now available, you can invite the user to ask "what's the weather in San Francisco?"
-  
-  ## Editing MCP Servers
-  
-  The user may ask to add tools or resources that may make sense to add to an existing MCP server (listed under 'Connected MCP Servers' below: ${
-		mcpHub
-			.getServers()
-			.filter((server) => server.status === "connected")
-			.map((server) => server.name)
-			.join(", ") || "(None running currently)"
-  }, e.g. if it would use the same API. This would be possible if you can locate the MCP server repository on the user's system by looking at the server arguments for a filepath. You might then use list_files and read_file to explore the files in the repository, and use replace_in_file to make changes to the files.
-  
-  However some MCP servers may be running from installed packages rather than a local repository, in which case it may make more sense to create a new MCP server.
-  `
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, headers=headers, timeout=30.0)
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return None
+
+def format_alert(feature: dict) -> str:
+    """Format an alert feature into a readable string."""
+    props = feature["properties"]
+    return f"""
+Event: {props.get('event', 'Unknown')}
+Area: {props.get('areaDesc', 'Unknown')}
+Severity: {props.get('severity', 'Unknown')}
+Description: {props.get('description', 'No description available')}
+Instructions: {props.get('instruction', 'No specific instructions provided')}
+"""
+
+@mcp.tool()
+async def get_alerts(state: str) -> str:
+    """Get weather alerts for a US state.
+
+    Args:
+        state: Two-letter US state code (e.g. CA, NY)
+    """
+    url = f"{NWS_API_BASE}/alerts/active/area/{state}"
+    data = await make_nws_request(url)
+
+    if not data or "features" not in data:
+        return "Unable to fetch alerts or no alerts found."
+
+    if not data["features"]:
+        return "No active alerts for this state."
+
+    alerts = [format_alert(feature) for feature in data["features"]]
+    return "\n---\n".join(alerts)
+
+@mcp.tool()
+async def get_forecast(latitude: float, longitude: float) -> str:
+    """Get weather forecast for a location.
+
+    Args:
+        latitude: Latitude of the location
+        longitude: Longitude of the location
+    """
+    # First get the forecast grid endpoint
+    points_url = f"{NWS_API_BASE}/points/{latitude},{longitude}"
+    points_data = await make_nws_request(points_url)
+
+    if not points_data:
+        return "Unable to fetch forecast data for this location."
+
+    # Get the forecast URL from the points response
+    forecast_url = points_data["properties"]["forecast"]
+    forecast_data = await make_nws_request(forecast_url)
+
+    if not forecast_data:
+        return "Unable to fetch detailed forecast."
+
+    # Format the periods into a readable forecast
+    periods = forecast_data["properties"]["periods"]
+    forecasts = []
+    for period in periods[:5]:  # Only show next 5 periods
+        forecast = f"""
+{period['name']}:
+Temperature: {period['temperature']}°{period['temperatureUnit']}
+Wind: {period['windSpeed']} {period['windDirection']}
+Forecast: {period['detailedForecast']}
+"""
+        forecasts.append(forecast)
+
+    return "\n---\n".join(forecasts)
+
+if __name__ == "__main__":
+    # Initialize and run the server
+    mcp.run(transport='stdio')
+\`\`\`
+
+
+### Echo Server
+
+A simple server demonstrating resources, tools, and prompts:
+
+\`\`\`python
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("Echo")
+
+@mcp.resource("echo://{message}")
+def echo_resource(message: str) -> str:
+    """Echo a message as a resource"""
+    return f"Resource echo: {message}"
+
+@mcp.tool()
+def echo_tool(message: str) -> str:
+    """Echo a message as a tool"""
+    return f"Tool echo: {message}"
+
+@mcp.prompt()
+def echo_prompt(message: str) -> str:
+    """Create an echo prompt"""
+    return f"Please process this message: {message}"
+\`\`\`
+
+### SQLite Explorer
+
+A more complex example showing database integration:
+
+\`\`\`python
+from mcp.server.fastmcp import FastMCP
+import sqlite3
+
+mcp = FastMCP("SQLite Explorer")
+
+@mcp.resource("schema://main")
+def get_schema() -> str:
+    """Provide the database schema as a resource"""
+    conn = sqlite3.connect("database.db")
+    schema = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table'"
+    ).fetchall()
+    return "\n".join(sql[0] for sql in schema if sql[0])
+
+@mcp.tool()
+def query_data(sql: str) -> str:
+    """Execute SQL queries safely"""
+    conn = sqlite3.connect("database.db")
+    try:
+        result = conn.execute(sql).fetchall()
+        return "\n".join(str(row) for row in result)  // Fixed '啐' to 'for'
+    except Exception as e:
+        return f"Error: {str(e)}"
+\`\`\`
+
+### MCP Primitives
+
+The MCP protocol defines three core primitives that servers can implement:
+
+| Primitive | Control               | Description                                         | Example Use                  |
+|-----------|-----------------------|-----------------------------------------------------|------------------------------|
+| Prompts   | User-controlled       | Interactive templates invoked by user choice        | Slash commands, menu options |
+| Resources | Application-controlled| Contextual data managed by the client application   | File contents, API responses |
+| Tools     | Model-controlled      | Functions exposed to the LLM to take actions        | API calls, data updates      |
+
+### Server Capabilities
+
+MCP servers declare capabilities during initialization:
+
+| Capability  | Feature Flag                 | Description                        |
+|-------------|------------------------------|------------------------------------|
+| \`\prompts\`   | \`\listChanged\`                | Prompt template management         |
+| \`\resources\` | \`\subscribe\`, \`\listChanged\`   | Resource exposure and updates      |
+| \`\tools\`     | \`\listChanged\`                | Tool discovery and execution       |
+| \`\logging\`   | -                            | Server logging configuration       |
+| \`\completion\`| -                            | Argument completion suggestions    |
+\`\`\`
+`
 		: ""
 
 	const mcpSection = `
@@ -585,7 +569,7 @@ KEY RULES
 - **Tool use MUST be in valid XML format:**
  <tool_name>
   <parameter1_name>value1</parameter1_name>
-  <parameter2_name>value2</parameter_name>
+  <parameter2_name>value2</parameter2_name>
  </tool_name>
 - **WAIT for user confirmation after each tool use before proceeding.**
 - If a required parameter is missing, use \`ask_followup_question\`.
@@ -605,7 +589,6 @@ Shell: ${getShell()}
 Home Dir: ${os.homedir().toPosix()}
 CWD: ${cwd.toPosix()}
 `
-
 	const objective = `
 OBJECTIVE
 Accomplish the user's task iteratively:
@@ -619,7 +602,6 @@ Accomplish the user's task iteratively:
 4. Use \`attempt_completion\` when done.
 5. The user may provide feedback for improvements.
 `
-
 	// --- FINAL PROMPT ---
 	return `
 You are Cline, a skilled software engineer. You have tools to interact with the user's system and accomplish tasks.
@@ -633,7 +615,6 @@ Use one tool per message, formatted in XML. Wait for the user's response after e
 
 ${toolSections}
 
-KEY RULES
 ${keyRules}
 
 ${mcpSection}
@@ -664,7 +645,9 @@ export function addUserInstructions(
 		.join("\n\n")
 
 	return `
+
 ====
+
 ${customInstructions.trim()}
 `
 }
