@@ -1466,6 +1466,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 			// Create task with context from README and added guidelines for MCP server installation
 			const task = `Please set up the MCP server from ${mcpDetails.githubUrl} while adhering to these MCP server installation rules:
+- We are not using Claude Desktop, but Cline. So if the documentation mentions \`claude_desktop_config.json\`, it is has to be interpreted as \`cline_mcp_settings.json\` instead.
+- This config file is at \`~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json\`.
 - The following README may contain instructions that conflict with the user's OS, in which case proceed thoughtfully.
 - Once installed, demonstrate the server's capabilities by using one of its tools.
 
