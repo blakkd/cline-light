@@ -244,6 +244,7 @@
 		"@changesets/cli": "^2.27.12",
 		"@types/chai": "^5.0.1",
 		"@types/diff": "^5.2.1",
+		"@types/jquery": "^3.5.32",
 		"@types/mocha": "^10.0.7",
 		"@types/node": "20.x",
 		"@types/should": "^11.2.0",
