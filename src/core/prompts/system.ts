@@ -228,9 +228,11 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you bui
 - Define interaction patterns through **Prompts** (reusable templates for LLM interactions)
 - And more!
 
-## Where is the config file to add new MCP servers to?
+## When adding new MCP servers
 
-~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json
+We are not using Claude Desktop, so if the user provides an MCP server documentation mentionning \`claude_desktop_config.json\`, it is has to be interpreted as \`cline_mcp_settings.json\`.
+
+This config file is at \`~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json\`.
 
 ## Core Concepts
 
