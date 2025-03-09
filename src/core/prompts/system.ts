@@ -231,7 +231,6 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you bui
 ## When adding new MCP servers
 
 We are not using Claude Desktop, so if the user provides an MCP server documentation mentionning \`claude_desktop_config.json\`, it is has to be interpreted as \`cline_mcp_settings.json\`.
-
 This config file is at \`~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json\`.
 
 ## Core Concepts
