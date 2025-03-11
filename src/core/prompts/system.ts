@@ -219,7 +219,7 @@ ${resourceList ? `Resources:\n${resourceList}` : ""}`
 
 	const mcpServerCreationDetails = isFullMode
 		? `
-## What is MCP?
+# What is MCP?
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you build servers that expose data and functionality to LLM applications in a secure, standardized way. Think of it like a web API, but specifically designed for LLM interactions. MCP servers can:
 
@@ -228,9 +228,9 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you bui
 - Define interaction patterns through **Prompts** (reusable templates for LLM interactions)
 - And more!
 
-## Core Concepts
+# Core Concepts
 
-### Server
+## Server
 
 The FastMCP server is your core interface to the MCP protocol. It handles connection management, protocol compliance, and message routing:
 
@@ -272,7 +272,7 @@ def query_db(ctx: Context) -> str:
     return db.query()
 \`\`\`
 
-### Resources
+## Resources
 
 Resources are how you expose data to LLMs. They're similar to GET endpoints in a REST API - they provide data but shouldn't perform significant computation or have side effects:
 
@@ -288,7 +288,7 @@ def get_user_profile(user_id: str) -> str:
     return f"Profile data for user {user_id}"
 \`\`\`
 
-### Tools
+## Tools
 
 Tools let LLMs take actions through your server. Unlike resources, tools are expected to perform computation and have side effects:
 
@@ -306,7 +306,7 @@ async def fetch_weather(city: str) -> str:
         return response.text
 \`\`\`
 
-### Prompts
+## Prompts
 
 Prompts are reusable templates that help LLMs interact with your server effectively:
 
@@ -324,7 +324,7 @@ def debug_error(error: str) -> list[Message]:
     ]
 \`\`\`
 
-### Images
+## Images
 
 FastMCP provides an \`Image\` class that automatically handles image data:
 
@@ -340,7 +340,7 @@ def create_thumbnail(image_path: str) -> Image:
     return Image(data=img.tobytes(), format="png")
 \`\`\`
 
-### Context
+## Context
 
 The Context object gives your tools and resources access to MCP capabilities:
 
@@ -371,9 +371,9 @@ mcp dev server.py --with pandas --with numpy
 mcp dev server.py --with-editable .
 \`\`\`
 
-## Examples
+# Examples
 
-### Simple Weather Server
+## Simple Weather Server
 
 \`\`\`python
 from typing import Any
@@ -473,7 +473,7 @@ if __name__ == "__main__":
 \`\`\`
 
 
-### Echo Server
+## Echo Server
 
 A simple server demonstrating resources, tools, and prompts:
 
@@ -498,7 +498,7 @@ def echo_prompt(message: str) -> str:
     return f"Please process this message: {message}"
 \`\`\`
 
-### SQLite Explorer
+## SQLite Explorer
 
 A more complex example showing database integration:
 
@@ -528,7 +528,7 @@ def query_data(sql: str) -> str:
         return f"Error: {str(e)}"
 \`\`\`
 
-### MCP Primitives
+# MCP Primitives
 
 The MCP protocol defines three core primitives that servers can implement:
 
@@ -538,18 +538,25 @@ The MCP protocol defines three core primitives that servers can implement:
 | Resources | Application-controlled| Contextual data managed by the client application   | File contents, API responses |
 | Tools     | Model-controlled      | Functions exposed to the LLM to take actions        | API calls, data updates      |
 
-### Server Capabilities
+# Server Capabilities
 
 MCP servers declare capabilities during initialization:
 
-| Capability  | Feature Flag                 | Description                        |
-|-------------|------------------------------|------------------------------------|
-| \`\prompts\`   | \`\listChanged\`                | Prompt template management         |
-| \`\resources\` | \`\subscribe\`, \`\listChanged\`   | Resource exposure and updates      |
-| \`\tools\`     | \`\listChanged\`                | Tool discovery and execution       |
-| \`\logging\`   | -                            | Server logging configuration       |
-| \`\completion\`| -                            | Argument completion suggestions    |
-\`\`\`
+| Capability     | Feature Flag                     | Description                        |
+|----------------|----------------------------------|------------------------------------|
+| \`\prompts\`   | \`\listChanged\`                 | Prompt template management         |
+| \`\resources\` | \`\subscribe\`, \`\listChanged\` | Resource exposure and updates      |
+| \`\tools\`     | \`\listChanged\`                 | Tool discovery and execution       |
+| \`\logging\`   | -                                | Server logging configuration       |
+| \`\completion\`| -                                | Argument completion suggestions    |
+
+# Installation instructions
+
+- If it's required, clone the into \`~/Documents/Cline/MCP/name_of_the_repo\`.
+- We are not using Claude Desktop, but Cline. So, if the documentation mentions \`claude_desktop_config.json\`, it is has to be interpreted as \`cline_mcp_settings.json\` instead.
+- This config file is at \`~/.config/VSCodium/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json\`.
+- The README, if provided, may contain instructions that conflict with the user's OS, in which case proceed thoughtfully.
+- Once installed, demonstrate the server's capabilities by using one of its tools.
 `
 		: ""
 
