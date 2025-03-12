@@ -48,24 +48,8 @@ const WelcomeView = () => {
 				<div style={{ padding: "0 20px", flexShrink: 0 }}>
 					<h2>What can I do for you?</h2>
 					<p>
-						This Cline fork only focuses on prompt compression, to make it usable in memory restricted environments.
-						Locally loaded models like
-						<VSCodeLink
-							href="https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
-							style={{ display: "inline" }}>
-							Qwen2.5-Coder-32B-Instruct
-						</VSCodeLink>
-						and
-						<VSCodeLink
-							href="https://huggingface.co/bartowski/Mistral-Small-24B-Instruct-2501-GGUF"
-							style={{ display: "inline" }}>
-							Mistral-Small-24B-Instruct
-						</VSCodeLink>
-						and even reasoning models like
-						<VSCodeLink href="https://huggingface.co/Qwen/QwQ-32B" style={{ display: "inline" }}>
-							QwQ
-						</VSCodeLink>
-						can now power Cline too! But note that the web scraping tool is only available for Claude.
+						This fork focuses solely on compressing the system prompt to make Cline accessible to local inference. The
+						prompt has been condensed as much as possible while preserving the original functionalities.
 					</p>
 				</div>
 				<p style={{ color: "var(--vscode-descriptionForeground)" }}>

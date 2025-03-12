@@ -797,8 +797,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<div style={{ padding: "0 20px", flexShrink: 0 }}>
 						<h2>What can I do for you?</h2>
 						<p>
-							This fork makes Cline accessible to local inference. The prompt has been shortened as much as possible
-							while preserving the original information.
+							This fork focuses solely on compressing the system prompt to make Cline accessible to local inference.
+							The prompt has been condensed as much as possible while preserving the original functionalities.
 						</p>
 						<p style={{ fontSize: "0.8em" }}>Note: the web browsing tool is only available for Claude.</p>
 					</div>
