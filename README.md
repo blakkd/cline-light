@@ -1,3 +1,5 @@
+[archived] as I moved to [Roo-Code](https://github.com/RooVetGit/Roo-Code)
+
 # Cline - AI Assistant for CLI and Editor
 
 This fork focuses solely on compressing the system prompt to make Cline accessible to local inference.
